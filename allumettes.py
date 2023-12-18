@@ -1,5 +1,5 @@
 from constants import ALLUMETTES_STR, REGLES_STR, JEU_STR
-from utils import MessageConsole
+from utils import MessageConsole, Joueur
 
 def regles() -> None :
     # Ne prends aucun argument
@@ -10,7 +10,7 @@ def regles() -> None :
     print(" - Le joueur qui retire la dernière allumette a perdu\n")
     print(JEU_STR)
 
-def actions(joueur : str, nbAlumettes : int) -> int :
+def actions(joueur : Joueur, nbAlumettes : int) -> int :
     # Prends en argument le nom du joueur et le nombre d'allumettes restantes
     # Renvoie le nombre d'allumettes restantes après que le joueur ait joué
     
@@ -21,16 +21,16 @@ def actions(joueur : str, nbAlumettes : int) -> int :
     
     alumettesSupr = -1
     while alumettesSupr == -1 :
-        alumettesSupr = int(input(f"{joueur}, combien d'allumettes voulez-vous retirer ? [1] [2] [3] \n"))
+        alumettesSupr = int(input(f"{joueur.nom}, combien d'allumettes voulez-vous retirer ? [1] [2] [3] \n"))
         if alumettesSupr > 0 and alumettesSupr <= 3 and alumettesSupr <= nbAlumettes :
             nbAlumettes = nbAlumettes - alumettesSupr 
         else :
-            print(f"{joueur}, vous ne pouvez pas retirer ce nombre d'allumettes\n")
+            print(f"{joueur.nom}, vous ne pouvez pas retirer ce nombre d'allumettes\n")
             alumettesSupr = -1
 
     return nbAlumettes
     
-def Allumettes(joueurs: list[str]) -> list[list[int]]:
+def Allumettes(joueurs: list[Joueur]) -> list[list[int]]:
     # Prends en argument les deux joueurs qui jouent sous la forme d'une liste de deux str
     # Renvoies une liste de liste de deux entiers représentant l'indice du joueur et le score à ajouter
 

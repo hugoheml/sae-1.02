@@ -1,4 +1,10 @@
+from typing import Optional
 import os 
+
+class Joueur :
+	nom : str
+	robot : bool
+	difficulte : Optional[str]
 
 def MessageConsole(contenu: str):
     # Prends en paramètre une chaine de caractère

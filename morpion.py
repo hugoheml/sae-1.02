@@ -1,5 +1,5 @@
 from constants import MORPION_STR, REGLES_STR, JEU_STR
-from utils import MessageConsole
+from utils import MessageConsole, Joueur
 
 def regles() -> None:
 	# Ne prends aucun argument
@@ -40,7 +40,7 @@ def AfficherPlateau(board: list[list[int]]) -> None:
 		print()
 	print(" 1    2    3\n")
 
-def DemanderCase(joueur: str, board: list[list[int]]) -> list[int]:
+def DemanderCase(joueur: Joueur, board: list[list[int]]) -> list[int]:
 	# Prends en argument le nom du joueur et le plateau de jeu
 	# Renvoie une liste de deux entiers correspondant aux coordonnées de la case choisie par le joueur
 
@@ -54,12 +54,12 @@ def DemanderCase(joueur: str, board: list[list[int]]) -> list[int]:
 		# One demande au joueur de choisir une case
 
 		if ligne < 1 or ligne > 3:
-			ligne = int(input(f"{joueur}: choisissez une ligne (1, 2, 3): "))
+			ligne = int(input(f"{joueur.nom}: choisissez une ligne (1, 2, 3): "))
 			if ligne < 1 or ligne > 3:
 				print("Cette ligne n'existe pas, veuillez en choisir une autre")
 				ligne = -1
 		else:
-			colonne = int(input(f"{joueur}: choisissez une colonne (1, 2, 3): "))
+			colonne = int(input(f"{joueur.nom}: choisissez une colonne (1, 2, 3): "))
 
 			if colonne < 1 or colonne > 3:
 				print("Cette colonne n'existe pas, veuillez en choisir une autre")
@@ -74,7 +74,7 @@ def DemanderCase(joueur: str, board: list[list[int]]) -> list[int]:
 	MessageConsole("\n")
 	return [colonne - 1, ligne -1]
 	
-def SelectionnerCase(joueur: str, joueurId: int, board: list[list[int]]) -> None:
+def SelectionnerCase(joueur: Joueur, joueurId: int, board: list[list[int]]) -> None:
 	# Prends en argument le nom du joueur, son identifiant (1 ou 2) et le plateau de jeu
 	# Modifie le plateau de jeu en fonction de la case choisie par le joueur
 
@@ -150,7 +150,7 @@ def VerifierVictoire(board: list[list[int]]) -> int:
 
 	return resultat
 
-def Morpion(joueurs: list[str]):
+def Morpion(joueurs: list[Joueur]):
     # Prends en argument une liste de deux chaînes de caractères correspondant aux noms des joueurs
     # Le premier joueur étant celui qui commence
     # Ne renvoies rien, mais fait fonctionner le jeu dans le terminal
@@ -200,7 +200,7 @@ def Morpion(joueurs: list[str]):
 		scores[0][1] = 1
 		scores[1][1] = 1
 	else:
-		print(f"Victoire du joueur {joueurs[resultat - 1]}")
+		print(f"Victoire du joueur {joueurs[resultat - 1].nom}")
 		scores[resultat - 1][1] = 2
 
 		if (resultat - 1) == 0:

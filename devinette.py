@@ -1,5 +1,5 @@
 from constants import DEVINETTE_STR, REGLES_STR, JEU_STR
-from utils import MessageConsole
+from utils import MessageConsole, Joueur
 
 def regles() -> None :
     # Ne prends aucun argument
@@ -12,7 +12,7 @@ def regles() -> None :
 
 
 
-def DemanderNombre(joueur: str, nombreMax: int) -> int :
+def DemanderNombre(joueur: Joueur, nombreMax: int) -> int :
     # Prends en argument le nom du joueur qui doit deviner le nombre
     # Et l'intervalle maximal dans lequel le nombre peut être choisi
 
@@ -23,14 +23,14 @@ def DemanderNombre(joueur: str, nombreMax: int) -> int :
     nombreSelect = -1
 
     while nombreSelect <= 0 or nombreSelect > nombreMax :
-        nombreSelect = int(input(f"\n{joueur}: Proposez un nombre entre 1 et {nombreMax} : \n"))
+        nombreSelect = int(input(f"\n{joueur.nom}: Proposez un nombre entre 1 et {nombreMax} : \n"))
 
         if nombreSelect <= 0 or nombreSelect > nombreMax :
             print(f"Le nombre choisi doit être compris entre 1 et {nombreMax}")
 
     return nombreSelect
 
-def DemanderReponse(joueurs: list[str], nombreSelect: int, nombreCible: int, scores: list[list[int]]) -> None :
+def DemanderReponse(joueurs: list[Joueur], nombreSelect: int, nombreCible: int, scores: list[list[int]]) -> None :
     # Prends en argument une liste de deux chaines de caractères représentant les noms des joueurs
     # Et le nombre choisi par le joueur ainsi que celui qui doit le deviner
     # Ne renvoies rien, mais envoie dans le terminal la réponse du joueur
@@ -86,7 +86,7 @@ def DemanderReponse(joueurs: list[str], nombreSelect: int, nombreCible: int, sco
     scores[1][1] = scores[1][1]-1
                 
 
-def Devinette(joueurs: list[str]) -> list[list[int]]:
+def Devinette(joueurs: list[Joueur]) -> list[list[int]]:
     # Prends en argument une liste de deux chaines de caractères représentant les noms des joueurs
     # Le premier joueur étant celui qui doit demander le nombre
     # Et le second celui qui doit deviner le nombre

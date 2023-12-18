@@ -1,5 +1,5 @@
 from constants import PUISSANCE_STR, REGLES_STR, JEU_STR
-from utils import MessageConsole
+from utils import MessageConsole, Joueur
 
 def regles() -> None:
 	# Ne prends aucun argument
@@ -42,7 +42,7 @@ def AfficherPlateau(board: list[list[int]], afficherRegles: bool) -> None:
 			print("    ", end="")
 		print(compteur + 1, end="    ")
 
-def SelectionnerCase(joueur: str, joueurId: int, pions: list[str], board: list[list[int]]) -> None:
+def SelectionnerCase(joueur: Joueur, joueurId: int, pions: list[str], board: list[list[int]]) -> None:
 	# Prends en argument le nom du joueur et le plateau de jeu
 	# Ne retourne rien et modifie le jeu
 	# Si la case est déjà prise, la fonction redemande une case au joueur
@@ -54,7 +54,7 @@ def SelectionnerCase(joueur: str, joueurId: int, pions: list[str], board: list[l
 	colonne = -1
 	while (colonne < 1 or colonne > 7) or ligne == -1:
 		# On demande au joueur de choisir une case
-		colonne = int(input(f"{pions[joueurId]} {joueur}: choisissez une colonne (1, 2, 3, 4, 5, 6, 7): "))
+		colonne = int(input(f"{pions[joueurId]} {joueur.nom}: choisissez une colonne (1, 2, 3, 4, 5, 6, 7): "))
 
 		if colonne < 1 or colonne > 7:
 			print("Cette case n'existe pas, veuillez en choisir une autre")
@@ -165,7 +165,7 @@ def VerifierVictoire(board: list[list[int]]) -> int:
 
 	return resultat
 
-def Puissance4(joueurs: list[str]):
+def Puissance4(joueurs: list[Joueur]):
     # Prends en argument une liste de deux chaînes de caractères correspondant aux noms des joueurs
     # Le premier joueur étant celui qui commence
     # Ne renvoies rien, mais fait fonctionner le jeu dans le terminal

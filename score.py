@@ -1,20 +1,20 @@
 from typing import BinaryIO 
 from constants import SCORE_FILE_NAME, SCORE_STR
 import pickle
-from utils import MessageConsole
+from utils import MessageConsole, Joueur
 
-class Joueur:
+class JoueurScore:
     nom: str
     score: int
 
 class ScoreJeux:
-    morpion: list[Joueur]
-    allumettes: list[Joueur]
-    devinette: list[Joueur]
-    puissance: list[Joueur]
+    morpion: list[JoueurScore]
+    allumettes: list[JoueurScore]
+    devinette: list[JoueurScore]
+    puissance: list[JoueurScore]
 
 
-def ChercherJoueur(scoreJeu: list[Joueur], nomJoueur: str) -> int:
+def ChercherJoueur(scoreJeu: list[JoueurScore], joueur: str) -> int:
     # Prends la liste des joueurs du jeu et le nom du joueur en argument
     # Retourne l'indice du joueur dans la liste des joueurs du jeu
 
@@ -25,12 +25,12 @@ def ChercherJoueur(scoreJeu: list[Joueur], nomJoueur: str) -> int:
     compteur = 0
 
     while compteur < len(scoreJeu) and index == -1:
-        if scoreJeu[compteur].nom == nomJoueur:
+        if scoreJeu[compteur].nom == joueur:
             index = compteur
         compteur += 1
     return index
 
-def TrierScores(tableau: list[Joueur]) -> None:
+def TrierScores(tableau: list[JoueurScore]) -> None:
     # Prends en argument un tableau de joueurs
     # Ne retourne rien
     # Trie le tableau à l'aide du tri par insertion
@@ -38,7 +38,7 @@ def TrierScores(tableau: list[Joueur]) -> None:
     n: int
     compteur: int
     compteur2: int
-    temp: Joueur
+    temp: JoueurScore
 
     n = len(tableau)
 
@@ -89,47 +89,47 @@ def EnregistrerScores(score: ScoreJeux) -> None:
     pickle.dump(score, fichier)
     fichier.close()
 
-def AjouterScore(scoreJeu: list[Joueur], nomJoueur: str, score: int) -> None:
+def AjouterScore(scoreJeu: list[JoueurScore], joueur: Joueur, score: int) -> None:
     # Prends la liste des scores des joueurs du jeu, le nom du joueur et le score en argument
     # Ne retourne rien
     # Ajoute le score dans l'objet ScoreJeux
     # Si vous souhaitez enlever des points, mettez un score négatif
 
-    joueur: Joueur
+    joueurScore: JoueurScore
     index: int
 
-    index = ChercherJoueur(scoreJeu, nomJoueur)
+    index = ChercherJoueur(scoreJeu, joueur.nom)
     if index == -1:
-        joueur = Joueur()
-        joueur.nom = nomJoueur
-        joueur.score = score
+        joueurScore = JoueurScore()
+        joueurScore.nom = joueur.nom
+        joueurScore.score = score
 
-        scoreJeu.append(joueur)
+        scoreJeu.append(joueurScore)
         index = len(scoreJeu) - 1
     else:
-        joueur = scoreJeu[index]
+        joueurScore = scoreJeu[index]
     
         # On vérifie que le score ne soit pas négatif
-        if (joueur.score + score) < 0:
-            joueur.score = 0
+        if (joueurScore.score + score) < 0:
+            joueurScore.score = 0
         else:
-            joueur.score += score
+            joueurScore.score += score
 
     if score < 0:
-        print(f"{nomJoueur} a perdu {score*-1} points")
+        print(f"{joueur.nom} a perdu {score*-1} points")
     elif score > 0:
-        print(f"{nomJoueur} a gagné {score} points")
+        print(f"{joueur.nom} a gagné {score} points")
 
-def VerifierScore(scoreJeu: list[Joueur], nomJoueur: str) -> None:
+def VerifierScore(scoreJeu: list[JoueurScore], joueur: Joueur) -> None:
     # Prends la liste des scores des joueurs du jeu, le nom du joueur en argument
     # Vérifies que le joueur existe bien dans la liste des scores et le rajoute si ce n'est pas le cas
 
     index: int
 
-    index = ChercherJoueur(scoreJeu, nomJoueur)
+    index = ChercherJoueur(scoreJeu, joueur.nom)
     if index == -1:
         # On ajoute 0 au score du joueur pour l'obliger à être mis dans la liste des scores
-        AjouterScore(scoreJeu, nomJoueur, 0)
+        AjouterScore(scoreJeu, joueur, 0)
 
 
 # Fonction du menu
@@ -145,7 +145,7 @@ def AfficherMenu() -> None:
     print("5. Voir le score total des joueurs")
     print("6. Quitter\n")
 
-def AfficherScoresJoueurs(listeJoueurs: list[Joueur]) -> None:
+def AfficherScoresJoueurs(listeJoueurs: list[JoueurScore]) -> None:
     # Prends une liste de joueurs en argument
     # Affiche les scores des joueurs
     # Ne retourne rien
@@ -161,7 +161,7 @@ def AfficherScoreJeu(scores: ScoreJeux, nomJeu: str) -> None:
     # Affiche les scores du jeu
     # Ne retourne rien
 
-    scoresJoueurs: list[Joueur]
+    scoresJoueurs: list[JoueurScore]
     scoresJoueurs = []
 
     if nomJeu == "morpion":
@@ -179,18 +179,18 @@ def AfficherScoreJeu(scores: ScoreJeux, nomJeu: str) -> None:
         print("\nVoici les scores du jeu", nomJeu," :")
     AfficherScoresJoueurs(scoresJoueurs)
 
-def AjouterScoreListe(scoresTotal: list[Joueur], scoresJeu: list[Joueur]) -> list[Joueur]:
+def AjouterScoreListe(scoresTotal: list[JoueurScore], scoresJeu: list[JoueurScore]) -> list[JoueurScore]:
     # Prends deux arugments, la liste des joueurs où on va ajouter les scores et la liste des joueurs du jeu
 
-    joueur: Joueur
-    nouveauJoueur: Joueur
+    joueur: JoueurScore
+    nouveauJoueur: JoueurScore
     index: int
 
     for joueur in scoresJeu:
         index = ChercherJoueur(scoresTotal, joueur.nom)
         if index == -1:
             # On créer une nouvelle instance de joueur pour éviter les problèmes de références
-            nouveauJoueur = Joueur()
+            nouveauJoueur = JoueurScore()
             nouveauJoueur.nom = joueur.nom
             nouveauJoueur.score = joueur.score
 
@@ -203,7 +203,7 @@ def AjouterScoreListe(scoresTotal: list[Joueur], scoresJeu: list[Joueur]) -> lis
 def AfficherScores(scores: ScoreJeux) -> None:
     # Prends en argument la liste des scores et affiche les scores de chaque joueurs, cumulés
     
-    scoresTotal: list[Joueur]
+    scoresTotal: list[JoueurScore]
 
     scoresTotal = []
     AjouterScoreListe(scoresTotal, scores.morpion)
@@ -217,7 +217,7 @@ def AfficherScores(scores: ScoreJeux) -> None:
     AfficherScoresJoueurs(scoresTotal)
 
 
-def GererScoresJeux(scores: list[Joueur], listeScoreAAjouter: list[list[int]], joueur1: str, joueur2: str) -> None:
+def GererScoresJeux(scores: list[JoueurScore], listeScoreAAjouter: list[list[int]], listeJoueurs: list[Joueur]) -> None:
     # Prends en argument la liste des scores, la liste des scores à ajouter, le nom du joueur 1 et le nom du joueur 2
     # Ajoute les scores à la liste des scores
     # Ne retourne rien
@@ -226,14 +226,14 @@ def GererScoresJeux(scores: list[Joueur], listeScoreAAjouter: list[list[int]], j
     for scoreAAjouter in listeScoreAAjouter:
         if scoreAAjouter[1] == 0:
             if scoreAAjouter[0] == 0:
-                print(f"{joueur1} n'a pas gagné de points")
+                print(f"{listeJoueurs[0]} n'a pas gagné de points")
             else:
-                print(f"{joueur2} n'a pas gagné de points")
+                print(f"{listeJoueurs[1]} n'a pas gagné de points")
         else:
             if scoreAAjouter[0] == 0:
-                AjouterScore(scores, joueur1, scoreAAjouter[1])
+                AjouterScore(scores, listeJoueurs[0], scoreAAjouter[1])
             else:
-                AjouterScore(scores, joueur2, scoreAAjouter[1])
+                AjouterScore(scores, listeJoueurs[1], scoreAAjouter[1])
     
 
 def GererMenuScores(scores: ScoreJeux) -> None:
