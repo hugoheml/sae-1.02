@@ -7,7 +7,7 @@ from constants import MENU_STR
 from score import GererScoresJeux, RecupererScores, EnregistrerScores, ScoreJeux, GererMenuScores, VerifierScore
 from utils import MessageConsole, Joueur
 
-def ajout_utilisateur(listeUtilisateurs: list[Joueur], numeroJoueur : int) -> None:
+def ajout_utilisateur(listeUtilisateurs: list[Joueur]) -> None:
     # Prends en argument une liste de joueur
     # Ajoute un joueur à cette liste (passage par référence)
 
@@ -23,7 +23,7 @@ def ajout_utilisateur(listeUtilisateurs: list[Joueur], numeroJoueur : int) -> No
     robot = ""
 
     while len(utilisateur.nom) < 3 or len(utilisateur.nom) > 10 :
-        utilisateur.nom = str(input(f"Entrez l'identifiant du joueur {numeroJoueur} (entre 3 et 10 caractères) : \n"))
+        utilisateur.nom = str(input(f"Entrez l'identifiant du joueur {len(listeUtilisateurs) + 1} (entre 3 et 10 caractères) : \n"))
         for joueur in listeUtilisateurs:
             if utilisateur.nom == joueur.nom:
                 utilisateur.nom = ""
@@ -59,9 +59,10 @@ def ChoixUtilisateurs() -> list[Joueur]:
     listeUtilisateurs = []
 
     MessageConsole("")
-    ajout_utilisateur(listeUtilisateurs,1)
+    ajout_utilisateur(listeUtilisateurs)
+
     MessageConsole("")
-    ajout_utilisateur(listeUtilisateurs,2)
+    ajout_utilisateur(listeUtilisateurs)
     
     return listeUtilisateurs
 
@@ -74,13 +75,13 @@ def ChoisirOrdreJoueur(utilisateurs: list[Joueur]) -> list[Joueur] :
     else:
         return [utilisateurs[1], utilisateurs[0]]
 
-def AfficherMenu(utilisateur1 : Joueur) -> None :
+def AfficherMenu(utilisateur : str) -> None :
     # Prends en argument le nom du joueur sous forme de str qui doit choisir le jeu
     # Nettoie le terminal
     # Ne renvoie rien, mais affiche le menu dans le terminal
 
     MessageConsole(MENU_STR)
-    print(f"\n{utilisateur1.nom}: que voulez-vous faire ? :\n")
+    print(f"\n{utilisateur}: que voulez-vous faire ? :\n")
     print("1. Jouer à devinette")
     print("2. Jouer aux allumettes")
     print("3. Jouer au morpion") 
@@ -115,9 +116,28 @@ def GererMenu(listeJoueurs: list[Joueur], scores: ScoreJeux) -> None :
     choixMenu: int
     joueurs: list[Joueur]
 
+    # L'administrateur est le nom de la personne qui doit s'occuper de gérer les jeux qui sont joués
+    administrateur: str
+
     arreterProgramme = False 
     choixMenu = -1
 
+    # Par défaut, l'administrateur est le premier joueur de la liste
+    administrateur = listeJoueurs[0].nom
+
+    # Si le premier joueur est un robot, l'administrateur est le deuxième joueur
+    if listeJoueurs[0].robot:
+        administrateur = listeJoueurs[1].nom
+
+    # Si les deux joueurs sont des robots, l'administrateur est demandé
+    if listeJoueurs[0].robot and listeJoueurs[1].robot:
+        administrateur = ""
+        while administrateur != listeJoueurs[0].nom and administrateur != listeJoueurs[1].nom and len(administrateur) < 3 or len(administrateur) > 10:
+            administrateur = str(input("Qui est l'administrateur ? \n"))
+            if administrateur != listeJoueurs[0].nom and administrateur != listeJoueurs[1].nom and len(administrateur) < 3 or len(administrateur) > 10:
+                print("L'administrateur ne doit pas être un des deux robots et doit contenir entre 3 et 10 caractères.")
+
+    AfficherMenu(administrateur)
     while not arreterProgramme : 
         while choixMenu < 1 or choixMenu > 6 :
             choixMenu = int(input(""))
@@ -173,7 +193,7 @@ def GererMenu(listeJoueurs: list[Joueur], scores: ScoreJeux) -> None :
             EnregistrerScores(scores)
             print("Les scores ont été enregistrés")
         if choixMenu != 6:
-            AfficherMenu(listeJoueurs[0])
+            AfficherMenu(administrateur)
             choixMenu = -1
 
 
@@ -189,5 +209,4 @@ if __name__ == "__main__" :
         VerifierScore(scores.devinette, joueur)
         VerifierScore(scores.puissance, joueur)
 
-    AfficherMenu(listeJoueurs[0])
     GererMenu(listeJoueurs, scores)
