@@ -1,5 +1,6 @@
 from constants import DEVINETTE_STR, REGLES_STR, JEU_STR
 from utils import MessageConsole, Joueur
+from random import randint
 
 def regles() -> None :
     # Ne prends aucun argument
@@ -9,8 +10,6 @@ def regles() -> None :
     print(" - Le premier joueur doit choisir un nombre entre 1 et un nombre maximum")
     print(" - Le second joueur doit deviner le nombre choisi par le premier joueur")
     print(JEU_STR)
-
-
 
 def DemanderNombre(joueur: Joueur, nombreMax: int) -> int :
     # Prends en argument le nom du joueur qui doit deviner le nombre
@@ -22,11 +21,14 @@ def DemanderNombre(joueur: Joueur, nombreMax: int) -> int :
     # On demande au joueur de choisir un nombre
     nombreSelect = -1
 
-    while nombreSelect <= 0 or nombreSelect > nombreMax :
-        nombreSelect = int(input(f"\n{joueur.nom}: Proposez un nombre entre 1 et {nombreMax} : \n"))
+    if not joueur.robot:
+        while nombreSelect <= 0 or nombreSelect > nombreMax :
+            nombreSelect = int(input(f"\n{joueur.nom}: Proposez un nombre entre 1 et {nombreMax} : \n"))
 
-        if nombreSelect <= 0 or nombreSelect > nombreMax :
-            print(f"Le nombre choisi doit être compris entre 1 et {nombreMax}")
+            if nombreSelect <= 0 or nombreSelect > nombreMax :
+                print(f"Le nombre choisi doit être compris entre 1 et {nombreMax}")
+    else:
+        nombreSelect = randint(1, nombreMax)
 
     return nombreSelect
 
@@ -49,41 +51,56 @@ def DemanderReponse(joueurs: list[Joueur], nombreSelect: int, nombreCible: int, 
     print("2. Le nombre à deviner est plus petit")
     print("3. Vous avez gagné ! \n")
 
-    while demandeEnCours :
-        reponseSelect = int(input())
-        if reponseSelect <= 0 or reponseSelect > 3 :
-            print("La réponse doit être comprise entre 1 et 3")
+    if not joueurs[0].robot:
+        while demandeEnCours :
+            reponseSelect = int(input())
+            if reponseSelect <= 0 or reponseSelect > 3 :
+                print("La réponse doit être comprise entre 1 et 3")
 
-        if reponseSelect == 1 :
-            if nombreSelect >= nombreCible :
-                print("Bien tenté mais non, faut pas tricher, réessayez")
-                scores[0][1] = scores[0][1]-1
+            if reponseSelect == 1 :
+                if nombreSelect >= nombreCible :
+                    print("Bien tenté mais non, faut pas tricher, réessayez")
+                    scores[0][1] = scores[0][1]-1
 
-            else :
-                MessageConsole(f"{joueurs[0]}: Le nombre est plus grand")
-                scores[0][1] = scores[0][1]+1
-                demandeEnCours = False
+                else :
+                    MessageConsole(f"{joueurs[0].nom}: Le nombre est plus grand")
+                    scores[0][1] = scores[0][1]+1
+                    demandeEnCours = False
 
-        elif reponseSelect == 2 :
-            if nombreSelect <= nombreCible :
-                print("Bien tenté mais non, faut pas tricher, réessayez")
-                scores[0][1] = scores[0][1]-1
+            elif reponseSelect == 2 :
+                if nombreSelect <= nombreCible :
+                    print("Bien tenté mais non, faut pas tricher, réessayez")
+                    scores[0][1] = scores[0][1]-1
 
-            else :
-                MessageConsole(f"{joueurs[0]}: Le nombre est plus petit")
-                scores[0][1] = scores[0][1]+1
-                demandeEnCours = False
+                else :
+                    MessageConsole(f"{joueurs[0].nom}: Le nombre est plus petit")
+                    scores[0][1] = scores[0][1]+1
+                    demandeEnCours = False
 
-        elif reponseSelect == 3 :
-            if nombreSelect == nombreCible :
-                MessageConsole(f"{joueurs[0]}: Bravo {joueurs[1]} tu as gagné")
-                scores[0][1] = scores[0][1]+1
-                demandeEnCours = False
+            elif reponseSelect == 3 :
+                if nombreSelect == nombreCible :
+                    MessageConsole(f"{joueurs[0].nom}: Bravo {joueurs[1].nom} tu as gagné")
+                    scores[0][1] = scores[0][1]+1
+                    demandeEnCours = False
 
-            else :
-                print("Bien tenté mais non, faut pas tricher, réessayez")
-                scores[0][1] = scores[0][1]-1
-    scores[1][1] = scores[1][1]-1
+                else :
+                    print("Bien tenté mais non, faut pas tricher, réessayez")
+                    scores[0][1] = scores[0][1]-1
+        scores[1][1] = scores[1][1]-1
+    else:
+        if nombreSelect > nombreCible:
+            MessageConsole(f"{joueurs[0].nom}: Le nombre est plus grand")
+            scores[0][1] = scores[0][1]+1
+
+        elif nombreSelect < nombreCible:
+            MessageConsole(f"{joueurs[0].nom}: Le nombre est plus petit")
+            scores[0][1] = scores[0][1]+1
+
+        elif nombreSelect == nombreCible:
+            MessageConsole(f"{joueurs[0].nom}: Bravo {joueurs[1].nom} tu as gagné")
+            scores[0][1] = scores[0][1]+1
+
+        scores[1][1] = scores[1][1]-1
                 
 
 def Devinette(joueurs: list[Joueur]) -> list[list[int]]:
@@ -108,23 +125,27 @@ def Devinette(joueurs: list[Joueur]) -> list[list[int]]:
 
     # On demande aux joueurs de sélectionner un nombre maximum
     nombreMax = -1
-    while nombreMax < 10 :
-        nombreMax = int(input(f"{joueurs[0]} : Choisissez un nombre maximum : \n"))
-        if nombreMax < 10 :
-            print("Le nombre maximum doit être supérieur à 10")
+    if not joueurs[0].robot:
+        while nombreMax < 10 :
+            nombreMax = int(input(f"{joueurs[0]} : Choisissez un nombre maximum : \n"))
+            if nombreMax < 10 :
+                print("Le nombre maximum doit être supérieur à 10")
+    else:
+        nombreMax = randint(1, 100) * 10
 
     # Permet de définir le nombre de points du joueur 2 en fonction du nombre maximum
     scores[1][1] = nombreMax//10
 
     # On demande au premier joueur de choisir un nombre
     nombreCible = -1
-    while nombreCible <= 0 or nombreCible > nombreMax :
-        nombreCible = int(input(f"{joueurs[0]}: Choisissez le nombre à faire deviner entre 1 et {nombreMax} : \n"))
-        if nombreCible <= 0 or nombreCible > nombreMax :
-            print(f"Le nombre choisi doit être compris entre 1 et {nombreMax}")
+    if not joueurs[0].robot:
+        while nombreCible <= 0 or nombreCible > nombreMax :
+            nombreCible = int(input(f"{joueurs[0]}: Choisissez le nombre à faire deviner entre 1 et {nombreMax} : \n"))
+            if nombreCible <= 0 or nombreCible > nombreMax :
+                print(f"Le nombre choisi doit être compris entre 1 et {nombreMax}")
 
     # Ce programme s'exécute pour chaque manches, tant qu'il n'a pas gagner
-    MessageConsole("\n")
+    MessageConsole(f"{joueurs[0].nom} a choisi un nombre entre 1 et {nombreMax}, à toi de le deviner !")
 
     jeuEnCours = True
     while jeuEnCours:

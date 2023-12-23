@@ -7,45 +7,63 @@ from constants import MENU_STR
 from score import GererScoresJeux, RecupererScores, EnregistrerScores, ScoreJeux, GererMenuScores, VerifierScore
 from utils import MessageConsole, Joueur
 
+def ajout_utilisateur(listeUtilisateurs: list[Joueur], numeroJoueur : int) -> None:
+    # Prends en argument une liste de joueur
+    # Ajoute un joueur à cette liste (passage par référence)
+
+    utilisateur: Joueur
+    utilisateur = Joueur()
+    utilisateur.nom = ""
+    utilisateur.robot = False
+    utilisateur.difficulte = None
+    robot: str
+    difficulte: str
+
+    difficulte = ""
+    robot = ""
+
+    while len(utilisateur.nom) < 3 or len(utilisateur.nom) > 10 :
+        utilisateur.nom = str(input(f"Entrez l'identifiant du joueur {numeroJoueur} (entre 3 et 10 caractères) : \n"))
+        for joueur in listeUtilisateurs:
+            if utilisateur.nom == joueur.nom:
+                utilisateur.nom = ""
+        if len(utilisateur.nom) < 3 or len(utilisateur.nom) > 10:
+            print(" \nL'identifiant ne correspond pas aux critères demandés.")
+
+    while robot != "o" and robot != "n":
+        robot = str(input("Voulez-vous que ce joueur soit un robot [o] [n] ? \n"))
+        
+        utilisateur.robot = robot == "o"
+
+    if utilisateur.robot:
+        while difficulte != "facile" and difficulte != "difficile":
+            difficulte = str(input("Quelle difficulté voulez-vous [facile] [difficile] ? \n"))
+            if difficulte != "facile" and difficulte != "difficile":
+                print("La difficulté n'est pas valide")
+            else :
+                utilisateur.difficulte = difficulte
+    else:
+        utilisateur.difficulte = None
+
+    listeUtilisateurs.append(utilisateur)
+
+
 def ChoixUtilisateurs() -> list[Joueur]:
     # Fonction qui demande à l'utilisateur de rentrer les identifiants des joueurs
     # Ne prends rien en argument
     # Si les identifiants existent les utilisateurs sont connectés
     # Si les identifiants n'existent pas les utilisateurs sont créés
     # Renvoie les identifiants des joueurs sous forme de liste
+
+    listeUtilisateurs: list[Joueur]
+    listeUtilisateurs = []
+
+    MessageConsole("")
+    ajout_utilisateur(listeUtilisateurs,1)
+    MessageConsole("")
+    ajout_utilisateur(listeUtilisateurs,2)
     
-    utilisateur1: Joueur
-    utilisateur2: Joueur
-
-    utilisateur1 = Joueur()
-    utilisateur2 = Joueur()
-
-    utilisateur1.nom = ""
-    utilisateur1.robot = False
-    utilisateur1.difficulte = None
-
-    utilisateur2.nom = ""
-    utilisateur2.robot = False
-    utilisateur2.difficulte = None
-
-
-    MessageConsole("\n")
-    while len(utilisateur1.nom) < 3 or len(utilisateur1.nom) > 10 :
-        utilisateur1.nom = str(input("Entrez l'identifiant du joueur 1 (entre 3 et 10 caractères) : \n"))
-
-        if len(utilisateur1.nom) < 3 or len(utilisateur1.nom) > 10 :
-            print(" \nL'identifiant ne correspond pas aux critères demandés.")
-
-    while len(utilisateur2.nom) < 3 or len(utilisateur2.nom) > 10 or utilisateur2.nom == utilisateur1 :
-        utilisateur2.nom = str(input("\nEntrez l'identifiant du joueur 2 (entre 3 et 10 caractères & différent du joueur 1) : \n"))
-
-        if utilisateur2.nom == utilisateur1 :
-            print(" \nL'identifiant du joueur 2 est le même que celui du joueur 1.")
-
-        elif len(utilisateur2.nom) < 3 or len(utilisateur2.nom) > 10 :
-            print(" \nL'identifiant ne correspond pas aux critères demandés.")
-
-    return [utilisateur1, utilisateur2]
+    return listeUtilisateurs
 
 def ChoisirOrdreJoueur(utilisateurs: list[Joueur]) -> list[Joueur] :
     # Prends en argument une liste de 2 utilisateurs sous forme de str

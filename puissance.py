@@ -1,5 +1,6 @@
 from constants import PUISSANCE_STR, REGLES_STR, JEU_STR
 from utils import MessageConsole, Joueur
+from random import randint
 
 def regles() -> None:
 	# Ne prends aucun argument
@@ -51,14 +52,27 @@ def SelectionnerCase(joueur: Joueur, joueurId: int, pions: list[str], board: lis
 	compteur :int
 	ligne = -1
 
-	colonne = -1
-	while (colonne < 1 or colonne > 7) or ligne == -1:
-		# On demande au joueur de choisir une case
-		colonne = int(input(f"{pions[joueurId]} {joueur.nom}: choisissez une colonne (1, 2, 3, 4, 5, 6, 7): "))
+	if not joueur.robot :
+		colonne = -1
+		while (colonne < 1 or colonne > 7) or ligne == -1:
+			# On demande au joueur de choisir une case
+			colonne = int(input(f"{pions[joueurId]} {joueur.nom}: choisissez une colonne (1, 2, 3, 4, 5, 6, 7): "))
 
-		if colonne < 1 or colonne > 7:
-			print("Cette case n'existe pas, veuillez en choisir une autre")
-		else:
+			if colonne < 1 or colonne > 7:
+				print("Cette case n'existe pas, veuillez en choisir une autre")
+			else:
+				ligne = -1
+				for compteur in range(len(board[colonne - 1])):
+					if board[colonne - 1][compteur] == -1:
+						ligne = compteur
+
+				if ligne == -1:
+					print("Cette colonne est pleine, veuillez en choisir une autre")
+				else:
+					board[colonne - 1][ligne] = joueurId
+	else:
+		if joueur.difficulte == "facile":
+			colonne = randint(1, 7)
 			ligne = -1
 			for compteur in range(len(board[colonne - 1])):
 				if board[colonne - 1][compteur] == -1:
@@ -68,6 +82,8 @@ def SelectionnerCase(joueur: Joueur, joueurId: int, pions: list[str], board: lis
 				print("Cette colonne est pleine, veuillez en choisir une autre")
 			else:
 				board[colonne - 1][ligne] = joueurId
+		elif joueur.difficulte == "difficile":
+			pass
 
 
 def Verifier_victoire_ligne(board: list[list[int]]) -> int:
@@ -229,13 +245,12 @@ def Puissance4(joueurs: list[Joueur]):
 		scores[0][1] = 2 
 		scores[1][1] = 2
 	else:
-		print(f"\nVictoire du joueur {joueurs[resultat - 1]} avec les pions {pions[resultat - 1]}")
+		print(f"\nVictoire du joueur {joueurs[resultat - 1].nom} avec les pions {pions[resultat - 1]}")
 		scores[resultat - 1][1] = 3
 
 		if (resultat - 1) == 0:
 			scores[1][1] = 1
 		else:
 			scores[0][1] = 1
-
 
 	return scores

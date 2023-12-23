@@ -224,6 +224,9 @@ def GererScoresJeux(scores: list[JoueurScore], listeScoreAAjouter: list[list[int
 
     print()
     for scoreAAjouter in listeScoreAAjouter:
+        if listeJoueurs[scoreAAjouter[0]].robot:
+            continue
+
         if scoreAAjouter[1] == 0:
             if scoreAAjouter[0] == 0:
                 print(f"{listeJoueurs[0]} n'a pas gagné de points")
