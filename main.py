@@ -152,7 +152,11 @@ def GererMenu(listeJoueurs: list[Joueur], scores: ScoreJeux) -> None :
                 listeScoreAAjouter = Devinette(joueurs)
                 GererScoresJeux(scores.devinette, listeScoreAAjouter, joueurs)
                 
-                rejouer = DemanderRejouer(listeJoueurs[0])
+                if joueurs[0].robot and joueurs[1].robot:
+                    rejouer = False
+                    input("Appuyez entrer pour continuer")
+                else:
+                    rejouer = DemanderRejouer(listeJoueurs[0])
 
         elif choixMenu == 2:
             while rejouer :
@@ -161,7 +165,11 @@ def GererMenu(listeJoueurs: list[Joueur], scores: ScoreJeux) -> None :
                 listeScoreAAjouter = Allumettes(joueurs)
                 GererScoresJeux(scores.allumettes, listeScoreAAjouter, joueurs)
                 
-                rejouer = DemanderRejouer(listeJoueurs[0])
+                if joueurs[0].robot and joueurs[1].robot:
+                    rejouer = False
+                    input("Appuyez entrer pour continuer")
+                else:
+                    rejouer = DemanderRejouer(listeJoueurs[0])
 
         elif choixMenu == 3:
             while rejouer :
@@ -171,17 +179,27 @@ def GererMenu(listeJoueurs: list[Joueur], scores: ScoreJeux) -> None :
                 listeScoreAAjouter = Morpion(joueurs)
                 GererScoresJeux(scores.morpion, listeScoreAAjouter, joueurs)
                 
-                rejouer = DemanderRejouer(listeJoueurs[0])
+                if joueurs[0].robot and joueurs[1].robot:
+                    rejouer = False
+                    input("Appuyez entrer pour continuer")
+                else:
+                    rejouer = DemanderRejouer(listeJoueurs[0])
 
-        
         elif choixMenu == 4:
+            if listeJoueurs[0].robot and listeJoueurs[1].robot:
+                rejouer = False
+                print("Malheureusement, nous ne supportons pas le Puissance 4 avec deux robots")
             while rejouer :
                 joueurs = ChoisirOrdreJoueur(listeJoueurs)
                 
                 listeScoreAAjouter = Puissance4(joueurs)
                 GererScoresJeux(scores.puissance, listeScoreAAjouter, joueurs)
                 
-                rejouer = DemanderRejouer(listeJoueurs[0])
+                if joueurs[0].robot and joueurs[1].robot:
+                    rejouer = False
+                    input("Appuyez entrer pour continuer")
+                else:
+                    rejouer = DemanderRejouer(listeJoueurs[0])
 
         elif choixMenu == 5:
             GererMenuScores(scores)     
