@@ -1,7 +1,6 @@
 from constants import MORPION_STR, REGLES_STR, JEU_STR
 from utils import MessageConsole, Joueur
 from random import randint
-from time import sleep
 
 def regles() -> None:
 	# Ne prends aucun argument
@@ -98,7 +97,7 @@ def SelectionnerCase(joueur: Joueur, joueurId: int, board: list[list[int]]) -> N
 		print(f"{joueur.nom} a choisi la case {coordonnes[0] + 1}, {coordonnes[1] + 1}")
 	else:
 
-		sleep(3)
+		input("Appuyez sur entrée pour continuer")
 
 		if joueur.difficulte == "facile":
 			# On récupère une liste contenant toutes les cases vides

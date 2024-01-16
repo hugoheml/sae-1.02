@@ -152,7 +152,7 @@ def Devinette(joueurs: list[Joueur]) -> list[list[int]]:
         statistique = StatistiqueJeu()
         statistique.nomJeu = "Devinette"
         statistique.temps = [[], []]
-        statistique.victoires = []
+        statistique.victoire = None
         statistique.valeurParticuliere = nbMaxListe
         statistique.difficultes = []
 
@@ -203,22 +203,19 @@ def Devinette(joueurs: list[Joueur]) -> list[list[int]]:
         while compteur < len(listeJoueursQuiDevine):
             joueurQuiDevine = listeJoueursQuiDevine[compteur]
 
-            statistique.temps[joueurQuiDevine].append([])
-
             jeuEnCours = True
             while jeuEnCours:
                 
                 tempsA = time()
                 nombreSelect = DemanderNombre(joueurs[joueurQuiDevine], nombreMax)
                 tempsB = time()
-                statistique.temps[joueurQuiDevine][len(statistique.temps[joueurQuiDevine]) - 1].append(tempsB - tempsA)
+                statistique.temps[joueurQuiDevine].append(tempsB - tempsA)
 
                 MessageConsole("")
                 DemanderReponse(joueurs, nombreSelect, nombreCible, scores)
                 
                 if nombreSelect == nombreCible :
                     jeuEnCours = False
-                    statistique.victoires.append(joueurQuiDevine)
 
             compteur += 1
 

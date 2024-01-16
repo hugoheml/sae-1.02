@@ -4,11 +4,11 @@ class StatistiqueJeu:
 	# Le nom du jeu
 	nomJeu: str
 
-	# La liste du temps pour chaque coups, par joueur, par manche
-	temps: list[list[list[float]]]
+	# La liste du temps par joueur par coup
+	temps: list[list[float]]
 
 	# Si la valeur est 0, le robot en facile à gagner sinon c'est le robot en difficile qui a gagné
-	victoires: list[int]
+	victoire: Optional[int]
 
 	# Non obligatoire, si c'est par rapport à une valeur particulière, on doit le préciser
 	valeurParticuliere: Optional[float]
@@ -23,38 +23,58 @@ def GenererFichierCSV(statistiques: list[StatistiqueJeu]) -> None:
 	contenuFichier: str
 	statistique: StatistiqueJeu
 	compteurA: int
-	compteurB: int
 	sommeCoupA: float
 	sommeCoupB: float
+	avecVictoires: bool
+	avecValParticuliere: bool
 
-	contenuFichier = "Id; Nom du jeu; Difficulte joueur 0; Difficule joueur 1; Temps joueur 0; Temps joueur1; Nombre de coups joueur facile; Nombre de coups joueur difficile; Victoire; Valeur particulière;\n"
-	print(contenuFichier)
+	contenuFichier = "Id; Nom du jeu; Difficulte joueur 0; Difficule joueur 1; Temps joueur 0; Temps joueur1; Nombre de coups joueur 0; Nombre de coups joueur 1;"
+	
+	avecVictoires = False
+	avecValParticuliere = False
+	compteurA = 0
+	while compteurA < len(statistiques) and (not avecVictoires or not avecValParticuliere) :
+		statistique = statistiques[compteurA]
+
+		if statistique.victoire != None:
+			avecVictoires = True
+
+		if statistique.valeurParticuliere is not None:
+			avecValParticuliere = True
+
+		compteurA += 1
+	
+	if avecVictoires:
+		contenuFichier += "Victoire;"
+	elif avecValParticuliere:
+		contenuFichier += "Valeur particuliere;"
+
 
 	compteurA = 0
 	while compteurA < len(statistiques):
 		statistique = statistiques[compteurA]
-		compteurB = 0
 
-		while compteurB < len(statistique.temps[0]):
-			contenuFichier += f"\n{compteurA + 1};{statistique.nomJeu};"
-			contenuFichier += f"{statistique.difficultes[0]};{statistique.difficultes[1]};"
+		contenuFichier += f"\n{compteurA + 1};{statistique.nomJeu};"
+		contenuFichier += f"{statistique.difficultes[0]};{statistique.difficultes[1]};"
 
-			sommeCoupA = 0
-			sommeCoupB = 0
+		sommeCoupA = 0
+		sommeCoupB = 0
 
-			for tempsA in statistique.temps[0][compteurB]:
-				sommeCoupA += tempsA
-				
-			for tempsB in statistique.temps[1][compteurB]:
-				sommeCoupB += tempsB
+		for tempsA in statistique.temps[0]:
+			sommeCoupA += tempsA
+			
+		for tempsB in statistique.temps[1]:
+			sommeCoupB += tempsB
 
-			contenuFichier += f"{sommeCoupA};{sommeCoupB};"
-			contenuFichier += f"{len(statistique.temps[0][compteurB])};{len(statistique.temps[1][compteurB])};{statistique.victoires[compteurB]};"
+		contenuFichier += f"{sommeCoupA};{sommeCoupB};"
+		contenuFichier += f"{len(statistique.temps[0])};{len(statistique.temps[1])};"
 
-			if statistique.valeurParticuliere is not None:
-				contenuFichier += f"{statistique.valeurParticuliere};"
+		if statistique.victoire is not None:
+			contenuFichier += f"{statistique.victoire};"
 
-			compteurB += 1
+		if statistique.valeurParticuliere is not None:
+			contenuFichier += f"{statistique.valeurParticuliere};"
+
 		
 		compteurA += 1
 
