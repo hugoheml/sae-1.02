@@ -1,6 +1,8 @@
 from constants import MORPION_STR, REGLES_STR, JEU_STR
 from utils import MessageConsole, Joueur
 from random import randint
+from statistiques import StatistiqueJeu, GenererFichierCSV
+from time import time
 
 def regles() -> None:
 	# Ne prends aucun argument
@@ -75,8 +77,8 @@ def DemanderCase(joueur: Joueur, board: list[list[int]]) -> list[int]:
 	MessageConsole("\n")
 	return [colonne - 1, ligne -1]
 	
-def SelectionnerCase(joueur: Joueur, joueurId: int, board: list[list[int]]) -> None:
-	# Prends en argument le nom du joueur, son identifiant (1 ou 2) et le plateau de jeu
+def SelectionnerCase(joueur: Joueur, joueurId: int, board: list[list[int]], attendre: bool) -> None:
+	# Prends en argument le nom du joueur, son identifiant (1 ou 2), le plateau de jeu et un booléen pour savoir si on doit attendre entre chaque coup
 	# Modifie le plateau de jeu en fonction de la case choisie par le joueur
 
 	coordonnes: list[int]
@@ -97,7 +99,8 @@ def SelectionnerCase(joueur: Joueur, joueurId: int, board: list[list[int]]) -> N
 		print(f"{joueur.nom} a choisi la case {coordonnes[0] + 1}, {coordonnes[1] + 1}")
 	else:
 
-		input("Appuyez sur entrée pour continuer")
+		if attendre:
+			input("Appuyez sur entrée pour continuer")
 
 		if joueur.difficulte == "facile":
 			# On récupère une liste contenant toutes les cases vides
@@ -264,8 +267,17 @@ def Morpion(joueurs: list[Joueur]):
 
 	plateau: list[list[int]]
 	joueurQuiJoue: int
+	joueurQuiCommence: int
 	resultat: int
 	scores: list[list[int]]
+	nbManches: list[int]
+	listeStatistiques: list[StatistiqueJeu]
+	statistique: StatistiqueJeu
+	compteurA: int
+	tempsA: float
+	tempsB: float
+	faireStatistiques: str
+
 	# Trois valeurs d'entier sont possibles:
 	# 0: case vide
 	# 1: case prise par le joueur 1
@@ -276,47 +288,92 @@ def Morpion(joueurs: list[Joueur]):
     # On affiche les règles du jeu
 	regles()
 
-
-	# On initialise le plateau de jeu
-	plateau = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
 	scores = [[0, 0], [1, 0]]
+	listeStatistiques = []
 
-	resultat = -1
-	joueurQuiJoue = 0
+	# On initialise la liste des manches
+	# La valeur étant le joueuer qui joue en premier
+	faireStatistiques = ""
+	if joueurs[0].robot and joueurs[1].robot:
 
-	# On affiche le plateau de jeu
-	AfficherPlateau(plateau)
+		while faireStatistiques != "o" and faireStatistiques != "n":
+			faireStatistiques = input("Voulez-vous effectuer des statistiques ? [o/n] ")
 
-	# On lance le jeu
-	while resultat == -1:
+		if faireStatistiques == "o":
+			nbManches = []
+			for compteurA in range(100_000):
+				nbManches.append(compteurA % 2)
+		else:
+			nbManches = [0]
 
-		# On demande au joueur de choisir une case
-		SelectionnerCase(joueurs[joueurQuiJoue], joueurQuiJoue + 1, plateau)
+	else:
+		nbManches = [0]
+
+	for joueurQuiCommence in nbManches:
+
+		# On initialise le plateau de jeu
+		plateau = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+
+		# On initialise les statistiques
+		statistique = StatistiqueJeu()
+		statistique.nomJeu = "Morpion"
+		statistique.temps = [[], []]
+		statistique.difficultes = []
+		statistique.victoire = None
+		statistique.valeurParticuliere = None
+		if joueurs[0].difficulte and joueurs[1].difficulte:
+			statistique.difficultes.append(joueurs[0].difficulte)
+			statistique.difficultes.append(joueurs[1].difficulte)
+
+
+		resultat = -1
+		joueurQuiJoue = joueurQuiCommence
 
 		# On affiche le plateau de jeu
 		AfficherPlateau(plateau)
-		
-		# On vérifie si le joueur a gagné
-		resultat = VerifierVictoire(plateau)
 
-		# On change de joueur
-		if joueurQuiJoue == 0:
-			joueurQuiJoue = 1
+		# On lance le jeu
+		while resultat == -1:
+
+			# On demande au joueur de choisir une case
+			tempsA = time()
+			SelectionnerCase(joueurs[joueurQuiJoue], joueurQuiJoue + 1, plateau, faireStatistiques != "o")
+			tempsB = time()
+
+			# On enregistre le temps du joueur
+			statistique.temps[joueurQuiJoue].append(tempsB - tempsA)
+
+			# On affiche le plateau de jeu
+			AfficherPlateau(plateau)
+			
+			# On vérifie si le joueur a gagné
+			resultat = VerifierVictoire(plateau)
+
+			# On change de joueur
+			if joueurQuiJoue == 0:
+				joueurQuiJoue = 1
+			else:
+				joueurQuiJoue = 0
+
+		if resultat == 0:
+			print("Match nul")
+
+			scores[0][1] = 1
+			scores[1][1] = 1
+
 		else:
-			joueurQuiJoue = 0
+			print(f"Victoire du joueur {joueurs[resultat - 1].nom}")
+			scores[resultat - 1][1] = 2
 
-	if resultat == 0:
-		print("Match nul")
+			if (resultat - 1) == 0:
+				scores[1][1] = 0
+			else:
+				scores[0][1] = 0
 
-		scores[0][1] = 1
-		scores[1][1] = 1
-	else:
-		print(f"Victoire du joueur {joueurs[resultat - 1].nom}")
-		scores[resultat - 1][1] = 2
+		statistique.victoire = resultat - 1
+		listeStatistiques.append(statistique)
 
-		if (resultat - 1) == 0:
-			scores[1][1] = 0
-		else:
-			scores[0][1] = 0
+	if len(nbManches) > 1:
+		GenererFichierCSV(listeStatistiques)
 
 	return scores

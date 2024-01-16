@@ -14,11 +14,14 @@ def regles() -> None :
     print(" - Le second joueur doit deviner le nombre choisi par le premier joueur")
     print(JEU_STR)
 
-def DemanderNombre(joueur: Joueur, nombreMax: int, nombreCible: int) -> int :
-    # Prends en argument le nom du joueur qui doit deviner le nombre, le nombre maximum et le nombre à deviner
+def DemanderNombre(joueur: Joueur, nombreMax: int) -> int :
+    # Prends en argument le nom du joueur qui doit deviner le nombre
     # Et l'intervalle maximal dans lequel le nombre peut être choisi
 
     nombreSelect : int
+    nombreMinJoueur : int
+    nombreMaxJoueur : int
+    ancienNbSelect : Optional[int]
 
 
     # On demande au joueur de choisir un nombre
@@ -30,33 +33,32 @@ def DemanderNombre(joueur: Joueur, nombreMax: int, nombreCible: int) -> int :
 
             if nombreSelect <= 0 or nombreSelect > nombreMax :
                 print(f"Le nombre choisi doit être compris entre 1 et {nombreMax}")
-    else:
-        if joueur.difficulte == "facile":
-            nombreSelect = randint(1, nombreMax)
-        elif joueur.difficulte == "difficile":
 
-            # Méthode de recherche dichotomique
+    elif joueur.difficulte == "facile":
+        nombreSelect = randint(1, nombreMax)
 
-            # On stocke dans une variable sur le joueur le nombre maximum, le nombre minimum et 0 (qui prendera ensuite la place du nombre qu'il a envoyé à la dernière manche) pour la recherche dichotomique
-            if joueur.infoParticulieres is None:
-                joueur.infoParticulieres = [1, nombreMax, 0]
+    elif joueur.difficulte == "difficile":
+        # On prends le nombre maximum et on le divise par deux
+        # Si le nombre est plus grand que le nombre à deviner, on prends la moitié supérieur
+        # Sinon on prends la moitié inférieur
+        # On répète l'opération jusqu'à trouver le nombre à deviner
+        # Si le nombre max / 2 est un float on prends le nombre entier supérieur
 
-            # Si l'utilisateur n'a jamais joué
-            print(joueur.infoParticulieres)
-            if joueur.infoParticulieres[2] == 0:
-                # Le joueur joue au milieu de l'intervalle
-                joueur.infoParticulieres[2] = nombreMax//2
+        if joueur.infoParticulieres is None:
+            joueur.infoParticulieres = [1, nombreMax, -1]
+        
+        nombreMinJoueur = joueur.infoParticulieres[0]
+        nombreMaxJoueur = joueur.infoParticulieres[1]
+        ancienNbSelect = joueur.infoParticulieres[2]
+
+        if ancienNbSelect != -1:
+            # Algo en fonction de l'ancien nombre choisi
+            if ancienNbSelect > nombreSelect:
+                nombreMaxJoueur = ancienNbSelect
             else:
-                # On change l'intervalle de recherche
-                if nombreCible > joueur.infoParticulieres[2]:
-                    joueur.infoParticulieres[0] = joueur.infoParticulieres[2]
-                else:
-                    joueur.infoParticulieres[1] = joueur.infoParticulieres[2]
-
-                # On choisit le milieu de l'intervalle
-                joueur.infoParticulieres[2] = (joueur.infoParticulieres[0] + joueur.infoParticulieres[1])//2
-
-            nombreSelect = joueur.infoParticulieres[2]
+                nombreMinJoueur = ancienNbSelect
+                
+        nombreSelect = nombreMinJoueur + (nombreMaxJoueur - nombreMinJoueur) // 2        
 
     return nombreSelect
 
@@ -117,19 +119,16 @@ def DemanderReponse(joueurs: list[Joueur], nombreSelect: int, nombreCible: int, 
         scores[1][1] = scores[1][1]-1
     else:
         if nombreSelect > nombreCible:
-            print(f"{joueurs[0].nom}: Le nombre est plus grand")
+            MessageConsole(f"{joueurs[0].nom}: Le nombre est plus grand")
             scores[0][1] = scores[0][1]+1
 
         elif nombreSelect < nombreCible:
-            print(f"{joueurs[0].nom}: Le nombre est plus petit")
+            MessageConsole(f"{joueurs[0].nom}: Le nombre est plus petit")
             scores[0][1] = scores[0][1]+1
 
         elif nombreSelect == nombreCible:
-            print(f"{joueurs[0].nom}: Bravo {joueurs[1].nom} tu as gagné")
+            MessageConsole(f"{joueurs[0].nom}: Bravo {joueurs[1].nom} tu as gagné")
             scores[0][1] = scores[0][1]+1
-
-        input("Appuyez sur entrée pour continuer")
-        MessageConsole("\n")
 
         scores[1][1] = scores[1][1]-1
                 
@@ -231,12 +230,13 @@ def Devinette(joueurs: list[Joueur]) -> list[list[int]]:
         while compteur < len(listeJoueursQuiDevine):
             joueurQuiDevine = listeJoueursQuiDevine[compteur]
 
-            jeuEnCours = True
+            joueurs[joueurQuiDevine].infoParticulieres = None
 
+            jeuEnCours = True
             while jeuEnCours:
                 
                 tempsA = time()
-                nombreSelect = DemanderNombre(joueurs[joueurQuiDevine], nombreMax, nombreCible)
+                nombreSelect = DemanderNombre(joueurs[joueurQuiDevine], nombreMax)
                 tempsB = time()
                 statistique.temps[joueurQuiDevine].append(tempsB - tempsA)
 

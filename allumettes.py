@@ -66,7 +66,6 @@ def Allumettes(joueurs: list[Joueur]) -> list[list[int]]:
     regles()
     # On affiche les règles du jeu
 
-
     scoreAAjouter = [[0, 0], [1, 0]]
     # On initialise le score à ajouter pour les deux joueurs
 

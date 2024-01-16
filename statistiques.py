@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, TextIO
 
 class StatistiqueJeu:
 	# Le nom du jeu
@@ -7,7 +7,7 @@ class StatistiqueJeu:
 	# La liste du temps par joueur par coup
 	temps: list[list[float]]
 
-	# Si la valeur est 0, le robot en facile à gagner sinon c'est le robot en difficile qui a gagné
+	# Si la valeur est -1, c'est une égalité, si 0 le robot qui joue en premier a gagné, si 1 le robot qui joue en deuxième a gagné
 	victoire: Optional[int]
 
 	# Non obligatoire, si c'est par rapport à une valeur particulière, on doit le préciser
@@ -27,6 +27,8 @@ def GenererFichierCSV(statistiques: list[StatistiqueJeu]) -> None:
 	sommeCoupB: float
 	avecVictoires: bool
 	avecValParticuliere: bool
+	fichierCSV: TextIO
+
 
 	contenuFichier = "Id; Nom du jeu; Difficulte joueur 0; Difficule joueur 1; Temps joueur 0; Temps joueur1; Nombre de coups joueur 0; Nombre de coups joueur 1;"
 	
@@ -77,5 +79,8 @@ def GenererFichierCSV(statistiques: list[StatistiqueJeu]) -> None:
 
 		
 		compteurA += 1
-
-	print(contenuFichier)
+	
+	# On enregistre les statistiques dans un fichier csv appelé statistiques.csv
+	fichierCSV = open("statistiques.csv", "w")
+	fichierCSV.write(contenuFichier)
+	fichierCSV.close()
