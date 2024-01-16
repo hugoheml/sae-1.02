@@ -14,8 +14,8 @@ def regles() -> None :
     print(" - Le second joueur doit deviner le nombre choisi par le premier joueur")
     print(JEU_STR)
 
-def DemanderNombre(joueur: Joueur, nombreMax: int) -> int :
-    # Prends en argument le nom du joueur qui doit deviner le nombre
+def DemanderNombre(joueur: Joueur, nombreMax: int, nombreCible: int) -> int :
+    # Prends en argument le nom du joueur qui doit deviner le nombre, le nombre maximum et le nombre à deviner
     # Et l'intervalle maximal dans lequel le nombre peut être choisi
 
     nombreSelect : int
@@ -119,11 +119,11 @@ def DemanderReponse(joueurs: list[Joueur], nombreSelect: int, nombreCible: int, 
         scores[1][1] = scores[1][1]-1
     else:
         if nombreSelect > nombreCible:
-            MessageConsole(f"{joueurs[0].nom}: Le nombre est plus grand")
+            MessageConsole(f"{joueurs[0].nom}: Le nombre est plus petit")
             scores[0][1] = scores[0][1]+1
 
         elif nombreSelect < nombreCible:
-            MessageConsole(f"{joueurs[0].nom}: Le nombre est plus petit")
+            MessageConsole(f"{joueurs[0].nom}: Le nombre est plus grand")
             scores[0][1] = scores[0][1]+1
 
         elif nombreSelect == nombreCible:
@@ -236,7 +236,7 @@ def Devinette(joueurs: list[Joueur]) -> list[list[int]]:
             while jeuEnCours:
                 
                 tempsA = time()
-                nombreSelect = DemanderNombre(joueurs[joueurQuiDevine], nombreMax)
+                nombreSelect = DemanderNombre(joueurs[joueurQuiDevine], nombreMax, nombreCible)
                 tempsB = time()
                 statistique.temps[joueurQuiDevine].append(tempsB - tempsA)
 
