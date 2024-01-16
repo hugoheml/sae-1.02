@@ -53,12 +53,13 @@ def DemanderNombre(joueur: Joueur, nombreMax: int, nombreCible: int) -> int :
 
         if ancienNbSelect != -1:
             # Algo en fonction de l'ancien nombre choisi
-            if ancienNbSelect > nombreSelect:
+            if ancienNbSelect > nombreCible:
                 nombreMaxJoueur = ancienNbSelect
             else:
                 nombreMinJoueur = ancienNbSelect
                 
-        nombreSelect = nombreMinJoueur + (nombreMaxJoueur - nombreMinJoueur) // 2        
+        nombreSelect = nombreMinJoueur + (nombreMaxJoueur - nombreMinJoueur) // 2     
+        joueur.infoParticulieres[2] = nombreSelect   
 
     return nombreSelect
 
