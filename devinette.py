@@ -154,6 +154,7 @@ def Devinette(joueurs: list[Joueur]) -> list[list[int]]:
     joueurQuiDevine: int
     tempsA: float
     tempsB: float
+    faireStatistiques: str
 
     MessageConsole(DEVINETTE_STR)
     # On affiche le titre du jeu
@@ -163,14 +164,22 @@ def Devinette(joueurs: list[Joueur]) -> list[list[int]]:
     scores = [[0, 0], [1, 0]]
     listStatistiques = []
 
+    faireStatistiques = ""
     if joueurs[0].robot and joueurs[1].robot:
         # On défini la liste de tout les nombres max possible (tous les multiples de 10 entre 10 et 50)
         listeNbMax = []
-        compteur = 0
 
-        while compteur < 5:
-            listeNbMax.append((compteur + 1) * 10)
-            compteur += 1
+        while faireStatistiques != "o" and faireStatistiques != "n":
+            faireStatistiques = input("Voulez-vous effectuer des statistiques ? [o/n] ")
+
+        if faireStatistiques == "o":
+            compteur = 0
+            while compteur < 5:
+                listeNbMax.append((compteur + 1) * 10)
+                compteur += 1
+        else:
+            listeNbMax = [0]
+
     else:
         listeNbMax = [None]
 
@@ -184,15 +193,9 @@ def Devinette(joueurs: list[Joueur]) -> list[list[int]]:
         statistique.valeurParticuliere = nbMaxListe
         statistique.difficultes = []
 
-        if joueurs[0].robot and joueurs[0].difficulte:
+        if joueurs[0].difficulte and joueurs[1].difficulte:
             statistique.difficultes.append(joueurs[0].difficulte)
-        else:
-            statistique.difficultes.append("Humain")
-
-        if joueurs[1].robot and joueurs[1].difficulte:
             statistique.difficultes.append(joueurs[1].difficulte)
-        else:
-            statistique.difficultes.append("Humain")
 
 
         # Si le nombre maximum n'est pas défini, on demande au premier joueur de le choisir
@@ -249,10 +252,10 @@ def Devinette(joueurs: list[Joueur]) -> list[list[int]]:
 
             compteur += 1
 
-        listStatistiques.append(statistique)
+        if faireStatistiques == "o":
+            listStatistiques.append(statistique)
 
-    if len(listStatistiques) > 0 and joueurs[0].robot and joueurs[1].robot:
-        print(f"Long statistiques: {len(listStatistiques)}")
+    if faireStatistiques == "o":
         GenererFichierCSV(listStatistiques)
 
     return scores

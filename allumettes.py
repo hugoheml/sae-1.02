@@ -1,6 +1,8 @@
 from constants import ALLUMETTES_STR, REGLES_STR, JEU_STR
 from utils import MessageConsole, Joueur
 from random import randint
+from statistiques import StatistiqueJeu, GenererFichierCSV
+from time import time
 
 def regles() -> None :
     # Ne prends aucun argument
@@ -59,6 +61,16 @@ def Allumettes(joueurs: list[Joueur]) -> list[list[int]]:
 
     nbAlumettes : int
     scoreAAjouter: list[list[int]]
+    nbManches: list[int]
+    listeStatistiques: list[StatistiqueJeu]
+    statistique: StatistiqueJeu
+    compteurA: int
+    tempsA: float
+    tempsB: float
+    faireStatistiques: str
+    joueurQuiCommence: int
+    joueurA: int
+    joueurB: int
 
     MessageConsole(ALLUMETTES_STR)
     # On affiche le nom du jeu
@@ -66,17 +78,68 @@ def Allumettes(joueurs: list[Joueur]) -> list[list[int]]:
     regles()
     # On affiche les règles du jeu
 
-    scoreAAjouter = [[0, 0], [1, 0]]
     # On initialise le score à ajouter pour les deux joueurs
+    scoreAAjouter = [[0, 0], [1, 0]]
+    listeStatistiques = []
 
-    nbAlumettes = 20
-    while nbAlumettes > 0 :
-        nbAlumettes = actions(joueurs[0], nbAlumettes)
-        if nbAlumettes <= 0 :
-            scoreAAjouter[1][1] = 2
-        else :
-            nbAlumettes = actions(joueurs[1], nbAlumettes)
+    # On initialise la liste des manches
+    # La valeur étant le joueuer qui joue en premier
+    faireStatistiques = ""
+    if joueurs[0].robot and joueurs[1].robot:
+
+        while faireStatistiques != "o" and faireStatistiques != "n":
+            faireStatistiques = input("Voulez-vous effectuer des statistiques ? [o/n] ")
+
+        if faireStatistiques == "o":
+            nbManches = []
+            for compteurA in range(100_000):
+                nbManches.append(compteurA % 2)
+        else:
+            nbManches = [0]
+
+    else:
+        nbManches = [0]
+
+    for joueurQuiCommence in nbManches:
+        joueurA = joueurQuiCommence
+        joueurB = (joueurQuiCommence + 1) % 2
+    
+        # On génère les statistiques
+        statistique = StatistiqueJeu()
+        statistique.nomJeu = "Morpion"
+        statistique.temps = [[], []]
+        statistique.difficultes = []
+        statistique.victoire = None
+        statistique.valeurParticuliere = None
+        if joueurs[0].difficulte and joueurs[1].difficulte:
+            statistique.difficultes.append(joueurs[0].difficulte)
+            statistique.difficultes.append(joueurs[1].difficulte)
+
+        nbAlumettes = 20
+        while nbAlumettes > 0 :
+
+            tempsA = time()
+            nbAlumettes = actions(joueurs[joueurA], nbAlumettes)
+            tempsB = time()
+            statistique.temps[joueurA].append(tempsB - tempsA)
+
             if nbAlumettes <= 0 :
-                scoreAAjouter[0][1] = 2
+                scoreAAjouter[1][1] = 2
+                statistique.victoire = 1
+            else :
+                tempsA = time()
+                nbAlumettes = actions(joueurs[joueurB], nbAlumettes)
+                tempsB = time()
+                statistique.temps[joueurB].append(tempsB - tempsA)
+                
+                if nbAlumettes <= 0 :
+                    scoreAAjouter[0][1] = 2
+                    statistique.victoire = 0
+
+        if faireStatistiques == "o":
+            listeStatistiques.append(statistique)
+
+    if faireStatistiques == "o":
+        GenererFichierCSV(listeStatistiques)
 
     return scoreAAjouter

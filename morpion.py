@@ -371,9 +371,11 @@ def Morpion(joueurs: list[Joueur]):
 				scores[0][1] = 0
 
 		statistique.victoire = resultat - 1
-		listeStatistiques.append(statistique)
 
-	if len(nbManches) > 1:
+		if faireStatistiques == "o":
+			listeStatistiques.append(statistique)
+
+	if faireStatistiques == "o":
 		GenererFichierCSV(listeStatistiques)
 
 	return scores
