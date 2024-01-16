@@ -18,20 +18,15 @@ def ajout_utilisateur(listeUtilisateurs: list[Joueur]) -> None:
     utilisateur.difficulte = None
     robot: str
     difficulte: str
+    numeroJoueur: int
 
     difficulte = ""
     robot = ""
 
-    while len(utilisateur.nom) < 3 or len(utilisateur.nom) > 10 :
-        utilisateur.nom = str(input(f"Entrez l'identifiant du joueur {len(listeUtilisateurs) + 1} (entre 3 et 10 caractères) : \n"))
-        for joueur in listeUtilisateurs:
-            if utilisateur.nom == joueur.nom:
-                utilisateur.nom = ""
-        if len(utilisateur.nom) < 3 or len(utilisateur.nom) > 10:
-            print(" \nL'identifiant ne correspond pas aux critères demandés.")
+    numeroJoueur = len(listeUtilisateurs) + 1
 
     while robot != "o" and robot != "n":
-        robot = str(input("Voulez-vous que ce joueur soit un robot [o] [n] ? \n"))
+        robot = str(input(f"Voulez-vous que le joueur n°{numeroJoueur} soit un robot [o] [n] ? \n"))
         
         utilisateur.robot = robot == "o"
 
@@ -42,8 +37,19 @@ def ajout_utilisateur(listeUtilisateurs: list[Joueur]) -> None:
                 print("La difficulté n'est pas valide")
             else :
                 utilisateur.difficulte = difficulte
+        
+        utilisateur.nom = f"Bot{numeroJoueur} - {utilisateur.difficulte}"
     else:
         utilisateur.difficulte = None
+
+        while len(utilisateur.nom) < 3 or len(utilisateur.nom) > 10 :
+            utilisateur.nom = str(input(f"Entrez l'identifiant du joueur {numeroJoueur} (entre 3 et 10 caractères) : \n"))
+            for joueur in listeUtilisateurs:
+                if utilisateur.nom == joueur.nom:
+                    utilisateur.nom = ""
+            if len(utilisateur.nom) < 3 or len(utilisateur.nom) > 10:
+                print(" \nL'identifiant ne correspond pas aux critères demandés.")
+
 
     listeUtilisateurs.append(utilisateur)
 
@@ -143,6 +149,10 @@ def GererMenu(listeJoueurs: list[Joueur], scores: ScoreJeux) -> None :
             choixMenu = int(input(""))
             if choixMenu < 1 or choixMenu > 6 :
                 print("Le numéro du jeu n'est pas valide.")
+
+        # On vide les infosParticulieres des deux joueurs
+        listeJoueurs[0].infoParticulieres = None
+        listeJoueurs[1].infoParticulieres = None
 
         rejouer = True
         if choixMenu == 1:

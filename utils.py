@@ -5,6 +5,7 @@ class Joueur :
 	nom : str
 	robot : bool
 	difficulte : Optional[str]
+	infoParticulieres: Optional[list[int]]
 
 def MessageConsole(contenu: str):
     # Prends en paramètre une chaine de caractère
