@@ -1,4 +1,4 @@
-from constants import MORPION_STR, REGLES_STR, JEU_STR
+from constants import MORPION_STR, REGLES_STR, JEU_STR, NB_STATISTIQUES
 from utils import MessageConsole, Joueur
 from random import randint
 from statistiques import StatistiqueJeu, GenererFichierCSV
@@ -98,9 +98,6 @@ def SelectionnerCase(joueur: Joueur, joueurId: int, board: list[list[int]], atte
 		board[coordonnes[1]][coordonnes[0]] = joueurId
 		print(f"{joueur.nom} a choisi la case {coordonnes[0] + 1}, {coordonnes[1] + 1}")
 	else:
-
-		if attendre:
-			input("Appuyez sur entrée pour continuer")
 
 		if joueur.difficulte == "facile":
 			# On récupère une liste contenant toutes les cases vides
@@ -267,13 +264,11 @@ def Morpion(joueurs: list[Joueur]):
 
 	plateau: list[list[int]]
 	joueurQuiJoue: int
-	joueurQuiCommence: int
 	resultat: int
 	scores: list[list[int]]
-	nbManches: list[int]
+	nbManches: int
 	listeStatistiques: list[StatistiqueJeu]
 	statistique: StatistiqueJeu
-	compteurA: int
 	tempsA: float
 	tempsB: float
 	faireStatistiques: str
@@ -294,25 +289,21 @@ def Morpion(joueurs: list[Joueur]):
 	# On initialise la liste des manches
 	# La valeur étant le joueuer qui joue en premier
 	faireStatistiques = ""
+	nbManches = 1
+
 	if joueurs[0].robot and joueurs[1].robot:
 
 		while faireStatistiques != "o" and faireStatistiques != "n":
 			faireStatistiques = input("Voulez-vous effectuer des statistiques ? [o/n] ")
 
 		if faireStatistiques == "o":
-			nbManches = []
-			for compteurA in range(100_000):
-				nbManches.append(compteurA % 2)
-		else:
-			nbManches = [0]
+			nbManches = NB_STATISTIQUES
 
-	else:
-		nbManches = [0]
-
-	for joueurQuiCommence in nbManches:
+	for _compteur in range(nbManches):
 
 		# On initialise le plateau de jeu
 		plateau = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+		joueurQuiJoue = 0
 
 		# On initialise les statistiques
 		statistique = StatistiqueJeu()
@@ -327,7 +318,6 @@ def Morpion(joueurs: list[Joueur]):
 
 
 		resultat = -1
-		joueurQuiJoue = joueurQuiCommence
 
 		# On affiche le plateau de jeu
 		AfficherPlateau(plateau)
@@ -345,6 +335,11 @@ def Morpion(joueurs: list[Joueur]):
 
 			# On affiche le plateau de jeu
 			AfficherPlateau(plateau)
+
+			# On attend si c'est nécessaire
+			if faireStatistiques != "o" and (joueurs[0].robot and joueurs[1].robot):
+				input("Appuyez sur entrée pour continuer")
+
 			
 			# On vérifie si le joueur a gagné
 			resultat = VerifierVictoire(plateau)

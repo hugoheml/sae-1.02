@@ -30,7 +30,7 @@ def GenererFichierCSV(statistiques: list[StatistiqueJeu]) -> None:
 	fichierCSV: TextIO
 
 
-	contenuFichier = "Id; Nom du jeu; Difficulte joueur 0; Difficule joueur 1; Temps joueur 0; Temps joueur1; Nombre de coups joueur 0; Nombre de coups joueur 1;"
+	contenuFichier = "Id; Nom du jeu; Difficulte joueur 0; Difficule joueur 1; Temps joueur 0; Temps joueur 1; Nombre de coups joueur 0; Nombre de coups joueur 1;"
 	
 	avecVictoires = False
 	avecValParticuliere = False
