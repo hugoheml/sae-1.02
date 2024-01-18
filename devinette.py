@@ -55,17 +55,22 @@ def DemanderNombre(joueur: Joueur, nombreMax: int, nombreCible: int) -> int :
             # Algo en fonction de l'ancien nombre choisi
             if ancienNbSelect > nombreCible:
                 nombreMaxJoueur = ancienNbSelect
+                joueur.infoParticulieres[1] = nombreMaxJoueur
+
             else:
                 nombreMinJoueur = ancienNbSelect
-                
+                joueur.infoParticulieres[0] = nombreMinJoueur
+
         nombreSelect = nombreMinJoueur + (nombreMaxJoueur - nombreMinJoueur) // 2     
-        joueur.infoParticulieres[2] = nombreSelect   
+        joueur.infoParticulieres[2] = nombreSelect
 
     return nombreSelect
 
-def DemanderReponse(joueurs: list[Joueur], nombreSelect: int, nombreCible: int, scores: list[list[int]]) -> None :
+def DemanderReponse(joueurs: list[Joueur], nombreSelect: int, nombreCible: int, scores: list[list[int]], joueurQuiDevine: int, joueurQuiDonneReponses: int) -> None :
     # Prends en argument une liste de deux chaines de caractères représentant les noms des joueurs
-    # Et le nombre choisi par le joueur ainsi que celui qui doit le deviner
+    # Le nombre choisi par le joueur ainsi que celui qui doit le deviner
+    # Et une liste de liste de deux entiers représentant l'indice du joueur et le score à ajouter
+    # Et le joueur qui devine et celui qui doit donner les réponses
     # Ne renvoies rien, mais envoie dans le terminal la réponse du joueur
 
     reponseSelect: int
@@ -75,9 +80,9 @@ def DemanderReponse(joueurs: list[Joueur], nombreSelect: int, nombreCible: int, 
     demandeEnCours = True
 
     MessageConsole("\n")
-    print(f"\n{joueurs[1].nom} propose le nombre : {nombreSelect}")
+    print(f"\n{joueurs[joueurQuiDevine].nom} propose le nombre : {nombreSelect}")
     print(f"Le nombre à deviner est : {nombreCible}")
-    print(f"\n{joueurs[0].nom}: Sélectionnez une réponse parmis :")
+    print(f"\n{joueurs[joueurQuiDonneReponses].nom}: Sélectionnez une réponse parmis :")
     print("1. Le nombre à deviner est plus grand")
     print("2. Le nombre à deviner est plus petit")
     print("3. Vous avez gagné ! \n")
@@ -91,47 +96,45 @@ def DemanderReponse(joueurs: list[Joueur], nombreSelect: int, nombreCible: int, 
             if reponseSelect == 1 :
                 if nombreSelect >= nombreCible :
                     print("Bien tenté mais non, faut pas tricher, réessayez")
-                    scores[0][1] = scores[0][1]-1
+                    scores[joueurQuiDonneReponses][1] = scores[joueurQuiDonneReponses][1]-1
 
                 else :
                     MessageConsole(f"{joueurs[0].nom}: Le nombre est plus grand")
-                    scores[0][1] = scores[0][1]+1
+                    scores[joueurQuiDonneReponses][1] = scores[joueurQuiDonneReponses][1]+1
                     demandeEnCours = False
 
             elif reponseSelect == 2 :
                 if nombreSelect <= nombreCible :
                     print("Bien tenté mais non, faut pas tricher, réessayez")
-                    scores[0][1] = scores[0][1]-1
+                    scores[joueurQuiDonneReponses][1] = scores[joueurQuiDonneReponses][1]-1
 
                 else :
                     MessageConsole(f"{joueurs[0].nom}: Le nombre est plus petit")
-                    scores[0][1] = scores[0][1]+1
+                    scores[joueurQuiDonneReponses][1] = scores[joueurQuiDonneReponses][1]+1
                     demandeEnCours = False
 
             elif reponseSelect == 3 :
                 if nombreSelect == nombreCible :
                     MessageConsole(f"{joueurs[0].nom}: Bravo {joueurs[1].nom} tu as gagné")
-                    scores[0][1] = scores[0][1]+1
+                    scores[joueurQuiDonneReponses][1] = scores[joueurQuiDonneReponses][1]+1
                     demandeEnCours = False
 
                 else :
                     print("Bien tenté mais non, faut pas tricher, réessayez")
-                    scores[0][1] = scores[0][1]-1
-        scores[1][1] = scores[1][1]-1
+                    scores[joueurQuiDonneReponses][1] = scores[joueurQuiDonneReponses][1]-1
+
+        scores[joueurQuiDevine][1] = scores[joueurQuiDevine][1]-1
     else:
         if nombreSelect > nombreCible:
             MessageConsole(f"{joueurs[0].nom}: Le nombre est plus petit")
-            scores[0][1] = scores[0][1]+1
 
         elif nombreSelect < nombreCible:
             MessageConsole(f"{joueurs[0].nom}: Le nombre est plus grand")
-            scores[0][1] = scores[0][1]+1
 
         elif nombreSelect == nombreCible:
             MessageConsole(f"{joueurs[0].nom}: Bravo {joueurs[1].nom} tu as gagné")
-            scores[0][1] = scores[0][1]+1
 
-        scores[1][1] = scores[1][1]-1
+        scores[joueurQuiDevine][1] = scores[joueurQuiDevine][1]-1
                 
 
 def Devinette(joueurs: list[Joueur]) -> list[list[int]]:
@@ -152,6 +155,7 @@ def Devinette(joueurs: list[Joueur]) -> list[list[int]]:
     compteur: int
     listeJoueursQuiDevine: list[int]
     joueurQuiDevine: int
+    joueurQuiDonneReponses: int
     tempsA: float
     tempsB: float
     faireStatistiques: str
@@ -178,7 +182,7 @@ def Devinette(joueurs: list[Joueur]) -> list[list[int]]:
                 listeNbMax.append((compteur + 1) * 10)
                 compteur += 1
         else:
-            listeNbMax = [0]
+            listeNbMax = [None]
 
     else:
         listeNbMax = [None]
@@ -207,7 +211,7 @@ def Devinette(joueurs: list[Joueur]) -> list[list[int]]:
                     if nombreMax < 10 :
                         print("Le nombre maximum doit être supérieur à 10")
             else:
-                nombreMax = randint(1, 100) * 10
+                nombreMax = randint(11, 100)
 
             # Permet de définir le nombre de points du joueur 2 en fonction du nombre maximum
             scores[1][1] = nombreMax//10
@@ -219,12 +223,11 @@ def Devinette(joueurs: list[Joueur]) -> list[list[int]]:
                     nombreCible = int(input(f"{joueurs[0].nom}: Choisissez le nombre à faire deviner entre 1 et {nombreMax} : \n"))
                     if nombreCible <= 0 or nombreCible > nombreMax :
                         print(f"Le nombre choisi doit être compris entre 1 et {nombreMax}")
+            else:
+                nombreCible = randint(1, nombreMax)
         else:
             nombreMax = nbMaxListe
             nombreCible = randint(1, nombreMax)
-
-        # Ce programme s'exécute pour chaque manches, tant qu'il n'a pas gagner
-        MessageConsole(f"{joueurs[0].nom} a choisi un nombre entre 1 et {nombreMax}, à toi de le deviner !")
 
         listeJoueursQuiDevine = [1]
         if joueurs[0].robot and joueurs[1].robot:
@@ -233,8 +236,16 @@ def Devinette(joueurs: list[Joueur]) -> list[list[int]]:
         compteur = 0
         while compteur < len(listeJoueursQuiDevine):
             joueurQuiDevine = listeJoueursQuiDevine[compteur]
+            if joueurQuiDevine == 0:
+                joueurQuiDonneReponses = 1
+            else:
+                joueurQuiDonneReponses = 0
 
             joueurs[joueurQuiDevine].infoParticulieres = None
+            nombreSelect = -1
+
+            
+            MessageConsole(f"{joueurs[joueurQuiDonneReponses].nom} a choisi un nombre entre 1 et {nombreMax}, à toi de le deviner !")
 
             jeuEnCours = True
             while jeuEnCours:
@@ -244,8 +255,17 @@ def Devinette(joueurs: list[Joueur]) -> list[list[int]]:
                 tempsB = time()
                 statistique.temps[joueurQuiDevine].append(tempsB - tempsA)
 
+                if joueurs[joueurQuiDevine].robot:
+                    print(f"{joueurs[joueurQuiDevine].nom} a choisi le nombre {nombreSelect}")
+                
+                if faireStatistiques != "o" and (joueurs[0].robot and joueurs[1].robot):
+                    input(f"Appuyez sur entrée pour continuer")
+
                 MessageConsole("")
-                DemanderReponse(joueurs, nombreSelect, nombreCible, scores)
+                DemanderReponse(joueurs, nombreSelect, nombreCible, scores, joueurQuiDevine, joueurQuiDonneReponses)
+
+                if faireStatistiques != "o" and (joueurs[0].robot and joueurs[1].robot):
+                    input(f"Appuyez sur entrée pour continuer")
                 
                 if nombreSelect == nombreCible :
                     jeuEnCours = False
