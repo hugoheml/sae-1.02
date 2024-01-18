@@ -63,3 +63,5 @@ SCORE_STR = '''
 
 REGLES_STR = " ▇▇▆▆▅▅▃▃▂▂▁▁ Règles du jeu : ▁▁▂▂▃▃▅▅▆▆▇▇\n"
 JEU_STR = "\n ▇▇▆▆▅▅▃▃▂▂▁▁ Début du jeu : ▁▁▂▂▃▃▅▅▆▆▇▇\n"
+
+NB_STATISTIQUES = 100

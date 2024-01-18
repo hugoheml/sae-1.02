@@ -1,4 +1,4 @@
-from constants import ALLUMETTES_STR, REGLES_STR, JEU_STR
+from constants import ALLUMETTES_STR, REGLES_STR, JEU_STR, NB_STATISTIQUES
 from utils import MessageConsole, Joueur
 from random import randint
 from statistiques import StatistiqueJeu, GenererFichierCSV
@@ -34,11 +34,17 @@ def actions(joueur : Joueur, nbAlumettes : int) -> int :
     
     elif joueur.difficulte == "facile":
         
-        nbAlumettes = nbAlumettes - randint(1, 3)
+        if nbAlumettes < 3:
+            alumettesSupr = randint(1, nbAlumettes)
+        else:
+            alumettesSupr = randint(1, 3)
 
     elif joueur.difficulte == "difficile":
         if nbAlumettes % 4 != 1 :
-            alumettesSupr = nbAlumettes % 4 - 1
+            if nbAlumettes % 4 == 0 :
+                alumettesSupr = 3
+            else:
+                alumettesSupr = nbAlumettes % 4 - 1
         else :
             if nbAlumettes == 1 :
                 alumettesSupr = 1
@@ -50,8 +56,9 @@ def actions(joueur : Joueur, nbAlumettes : int) -> int :
     if joueur.robot:
         print(f"{joueur.nom} retire {alumettesSupr} allumettes")
 
-    else :
-     nbAlumettes = nbAlumettes - alumettesSupr
+    nbAlumettes = nbAlumettes - alumettesSupr
+    if nbAlumettes <= 0:
+        print(f"\n{joueur.nom} a perdu !\n")
     
     return nbAlumettes 
 
@@ -61,16 +68,13 @@ def Allumettes(joueurs: list[Joueur]) -> list[list[int]]:
 
     nbAlumettes : int
     scoreAAjouter: list[list[int]]
-    nbManches: list[int]
+    nbManches: int
     listeStatistiques: list[StatistiqueJeu]
     statistique: StatistiqueJeu
-    compteurA: int
     tempsA: float
     tempsB: float
     faireStatistiques: str
-    joueurQuiCommence: int
-    joueurA: int
-    joueurB: int
+    mettrePauses: bool
 
     MessageConsole(ALLUMETTES_STR)
     # On affiche le nom du jeu
@@ -85,28 +89,22 @@ def Allumettes(joueurs: list[Joueur]) -> list[list[int]]:
     # On initialise la liste des manches
     # La valeur étant le joueuer qui joue en premier
     faireStatistiques = ""
+    nbManches = 1
     if joueurs[0].robot and joueurs[1].robot:
 
         while faireStatistiques != "o" and faireStatistiques != "n":
             faireStatistiques = input("Voulez-vous effectuer des statistiques ? [o/n] ")
 
         if faireStatistiques == "o":
-            nbManches = []
-            for compteurA in range(100_000):
-                nbManches.append(compteurA % 2)
-        else:
-            nbManches = [0]
+            nbManches = NB_STATISTIQUES
 
-    else:
-        nbManches = [0]
+    mettrePauses = faireStatistiques != "o" and (joueurs[0].robot and joueurs[1].robot)
 
-    for joueurQuiCommence in nbManches:
-        joueurA = joueurQuiCommence
-        joueurB = (joueurQuiCommence + 1) % 2
+    for _compteurA in range(nbManches):
     
         # On génère les statistiques
         statistique = StatistiqueJeu()
-        statistique.nomJeu = "Morpion"
+        statistique.nomJeu = "Allumettes"
         statistique.temps = [[], []]
         statistique.difficultes = []
         statistique.victoire = None
@@ -119,22 +117,28 @@ def Allumettes(joueurs: list[Joueur]) -> list[list[int]]:
         while nbAlumettes > 0 :
 
             tempsA = time()
-            nbAlumettes = actions(joueurs[joueurA], nbAlumettes)
+            nbAlumettes = actions(joueurs[0], nbAlumettes)
             tempsB = time()
-            statistique.temps[joueurA].append(tempsB - tempsA)
+            statistique.temps[0].append(tempsB - tempsA)
 
             if nbAlumettes <= 0 :
                 scoreAAjouter[1][1] = 2
                 statistique.victoire = 1
             else :
+                if mettrePauses:
+                    input("Appuyez sur entrée pour continuer")
+
                 tempsA = time()
-                nbAlumettes = actions(joueurs[joueurB], nbAlumettes)
+                nbAlumettes = actions(joueurs[1], nbAlumettes)
                 tempsB = time()
-                statistique.temps[joueurB].append(tempsB - tempsA)
+                statistique.temps[1].append(tempsB - tempsA)
                 
                 if nbAlumettes <= 0 :
                     scoreAAjouter[0][1] = 2
                     statistique.victoire = 0
+                else:
+                    if mettrePauses:
+                        input("Appuyez sur entrée pour continuer")
 
         if faireStatistiques == "o":
             listeStatistiques.append(statistique)

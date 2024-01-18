@@ -95,13 +95,14 @@ def AfficherMenu(utilisateur : str) -> None :
     print("5. Afficher les scores\n")
     print("6. Quitter\n")
 
-def DemanderRejouer(utilisateur: Joueur) -> bool :
-    # Prends en argument le nom du joueur qui doit choisir s'il veut rejouer
-    # Ne renvoie rien, mais affiche le menu dans le terminal
+def DemanderRejouer(administrateur: str) -> bool :
+    # Prends en argument le nom de l'administrateur sous forme de str
+    # Demande au joueur s'il veut rejouer
+    # Renvoie True si le joueur veut rejouer, False sinon
 
     rejouer: str
 
-    rejouer = str(input(f"\n{utilisateur.nom}: voulez-vous rejouer [o] [n] ?"))
+    rejouer = str(input(f"\n{administrateur}: voulez-vous rejouer [o] [n] ?"))
     return rejouer == "o"
 
 def GererMenu(listeJoueurs: list[Joueur], scores: ScoreJeux) -> None :
@@ -166,7 +167,7 @@ def GererMenu(listeJoueurs: list[Joueur], scores: ScoreJeux) -> None :
                     rejouer = False
                     input("Appuyez entrer pour continuer")
                 else:
-                    rejouer = DemanderRejouer(listeJoueurs[0])
+                    rejouer = DemanderRejouer(administrateur)
 
         elif choixMenu == 2:
             while rejouer :
@@ -179,7 +180,7 @@ def GererMenu(listeJoueurs: list[Joueur], scores: ScoreJeux) -> None :
                     rejouer = False
                     input("Appuyez entrer pour continuer")
                 else:
-                    rejouer = DemanderRejouer(listeJoueurs[0])
+                    rejouer = DemanderRejouer(administrateur)
 
         elif choixMenu == 3:
             while rejouer :
@@ -193,7 +194,7 @@ def GererMenu(listeJoueurs: list[Joueur], scores: ScoreJeux) -> None :
                     rejouer = False
                     input("Appuyez entrer pour continuer")
                 else:
-                    rejouer = DemanderRejouer(listeJoueurs[0])
+                    rejouer = DemanderRejouer(administrateur)
 
         elif choixMenu == 4:
             if listeJoueurs[0].robot and listeJoueurs[1].robot:
@@ -209,7 +210,7 @@ def GererMenu(listeJoueurs: list[Joueur], scores: ScoreJeux) -> None :
                     rejouer = False
                     input("Appuyez entrer pour continuer")
                 else:
-                    rejouer = DemanderRejouer(listeJoueurs[0])
+                    rejouer = DemanderRejouer(administrateur)
 
         elif choixMenu == 5:
             GererMenuScores(scores)     

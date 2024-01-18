@@ -229,9 +229,9 @@ def GererScoresJeux(scores: list[JoueurScore], listeScoreAAjouter: list[list[int
 
         if scoreAAjouter[1] == 0:
             if scoreAAjouter[0] == 0:
-                print(f"{listeJoueurs[0]} n'a pas gagné de points")
+                print(f"{listeJoueurs[0].nom} n'a pas gagné de points")
             else:
-                print(f"{listeJoueurs[1]} n'a pas gagné de points")
+                print(f"{listeJoueurs[1].nom} n'a pas gagné de points")
         else:
             if scoreAAjouter[0] == 0:
                 AjouterScore(scores, listeJoueurs[0], scoreAAjouter[1])
