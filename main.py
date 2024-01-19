@@ -165,7 +165,7 @@ def GererMenu(listeJoueurs: list[Joueur], scores: ScoreJeux) -> None :
                 
                 if joueurs[0].robot and joueurs[1].robot:
                     rejouer = False
-                    input("Appuyez entrer pour continuer")
+                    input("Appuyez sur entrer pour continuer")
                 else:
                     rejouer = DemanderRejouer(administrateur)
 
@@ -178,7 +178,7 @@ def GererMenu(listeJoueurs: list[Joueur], scores: ScoreJeux) -> None :
                 
                 if joueurs[0].robot and joueurs[1].robot:
                     rejouer = False
-                    input("Appuyez entrer pour continuer")
+                    input("Appuyez sur entrer pour continuer")
                 else:
                     rejouer = DemanderRejouer(administrateur)
 
@@ -192,7 +192,7 @@ def GererMenu(listeJoueurs: list[Joueur], scores: ScoreJeux) -> None :
                 
                 if joueurs[0].robot and joueurs[1].robot:
                     rejouer = False
-                    input("Appuyez entrer pour continuer")
+                    input("Appuyez sur entrer pour continuer")
                 else:
                     rejouer = DemanderRejouer(administrateur)
 
@@ -200,6 +200,7 @@ def GererMenu(listeJoueurs: list[Joueur], scores: ScoreJeux) -> None :
             if listeJoueurs[0].robot and listeJoueurs[1].robot:
                 rejouer = False
                 print("Malheureusement, nous ne supportons pas le Puissance 4 avec deux robots")
+                input("Appuyez sur entrer pour continuer")
             while rejouer :
                 joueurs = ChoisirOrdreJoueur(listeJoueurs)
                 
@@ -208,7 +209,7 @@ def GererMenu(listeJoueurs: list[Joueur], scores: ScoreJeux) -> None :
                 
                 if joueurs[0].robot and joueurs[1].robot:
                     rejouer = False
-                    input("Appuyez entrer pour continuer")
+                    input("Appuyez sur entrer pour continuer")
                 else:
                     rejouer = DemanderRejouer(administrateur)
 
