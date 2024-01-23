@@ -63,7 +63,7 @@ def actions(joueur : Joueur, nbAlumettes : int) -> int :
     return nbAlumettes 
 
 def Allumettes(joueurs: list[Joueur]) -> list[list[int]]:
-    # Prends en argument les deux joueurs qui jouent sous la forme d'une liste de deux str
+    # Prends en argument les deux joueurs qui jouent sous la forme d'un objet Joueur
     # Renvoies une liste de liste de deux entiers représentant l'indice du joueur et le score à ajouter
 
     nbAlumettes : int
