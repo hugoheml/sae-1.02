@@ -15,7 +15,7 @@ def regles() -> None :
     print(JEU_STR)
 
 def DemanderNombre(joueur: Joueur, nombreMax: int, nombreCible: int) -> int :
-    # Prends en argument le joueur qui doit deviner le nombre, le nombre maximum et le nombre à deviner
+    # Prends en argument le nom du joueur qui doit deviner le nombre, le nombre maximum et le nombre à deviner
     # Et l'intervalle maximal dans lequel le nombre peut être choisi
 
     nombreSelect : int
@@ -54,18 +54,14 @@ def DemanderNombre(joueur: Joueur, nombreMax: int, nombreCible: int) -> int :
         if ancienNbSelect != -1:
             # Algo en fonction de l'ancien nombre choisi
             if ancienNbSelect > nombreCible:
-                if ancienNbSelect == nombreMax:
-                    nombreMinJoueur = ancienNbSelect - 1
-                else:
-                    nombreMaxJoueur = ancienNbSelect
-
+                nombreMaxJoueur = ancienNbSelect - 1
                 joueur.infoParticulieres[1] = nombreMaxJoueur
-
-            elif ancienNbSelect < nombreCible:
-                nombreMinJoueur = ancienNbSelect
+            else:
+                nombreMinJoueur = ancienNbSelect + 1
                 joueur.infoParticulieres[0] = nombreMinJoueur
 
-        nombreSelect = nombreMinJoueur + (nombreMaxJoueur - nombreMinJoueur + 1) // 2     
+        nombreSelect = (nombreMinJoueur + nombreMaxJoueur) // 2
+
         joueur.infoParticulieres[2] = nombreSelect
 
     return nombreSelect
@@ -182,7 +178,7 @@ def Devinette(joueurs: list[Joueur]) -> list[list[int]]:
 
         if faireStatistiques == "o":
             compteur = 0
-            while compteur < 10:
+            while compteur < 5:
                 listeNbMax.append((compteur + 1) * 10)
                 compteur += 1
         else:

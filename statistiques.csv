@@ -1,11 +1,6 @@
 Id; Nom du jeu; Difficulte joueur 0; Difficule joueur 1; Temps joueur 0; Temps joueur 1; Nombre de coups joueur 0; Nombre de coups joueur 1;Valeur particuliere;
-1;Devinette;difficile;difficile;0.0;0.0;4;4;10;
-2;Devinette;difficile;difficile;0.0;0.0;5;5;20;
-3;Devinette;difficile;difficile;0.0;0.0;5;5;30;
-4;Devinette;difficile;difficile;0.0;0.0;6;6;40;
-5;Devinette;difficile;difficile;0.0;0.0;6;6;50;
-6;Devinette;difficile;difficile;0.0;0.0;6;6;60;
-7;Devinette;difficile;difficile;0.0;0.0;7;7;70;
-8;Devinette;difficile;difficile;0.0;0.0;7;7;80;
-9;Devinette;difficile;difficile;0.0;0.0;7;7;90;
-10;Devinette;difficile;difficile;0.0;0.0;7;7;100;
+1;Devinette;difficile;difficile;0.0;0.0;1;1;10;
+2;Devinette;difficile;difficile;0.0;0.0;1;1;20;
+3;Devinette;difficile;difficile;0.0;0.0;1;1;30;
+4;Devinette;difficile;difficile;0.0;0.0;1;1;40;
+5;Devinette;difficile;difficile;0.0;0.0;1;1;50;
